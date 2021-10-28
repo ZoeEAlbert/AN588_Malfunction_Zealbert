@@ -1,0 +1,285 @@
+---
+title: "dalarre_peercommentary_zealbert_04"
+author: "Zoe Albert"
+date: "10/28/2021"
+output: html_document
+---
+title: "dalarre_OriginalHomeworkCode_04"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+## HOMEWORK 4
+
+## 1: Write a simple R function, Z.prop.test(), that can perform one- or two-sample Z-tests for proportion data
+
+```{r}
+
+z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
+
+  ## For 1 sample
+  ###ZOE: I didn't think to include comments in my code, so I am glad you did. 
+  if (is.null(p2) == TRUE || is.null(n2) == TRUE) {
+    
+    z <- (p1 - p0)/sqrt(p0 * (1 - p0)/n1) ## Defines Z
+    lower <- p1 - qnorm(1-(1-conf.level)/2) * sqrt(p1 * (1 - p1)/n1)
+    upper <- p1 + qnorm(1-(1-conf.level)/2) * sqrt(p1 * (1 - p1)/n1)
+    ci <- c(lower, upper) ## Defines the CI
+    
+    if(n1*p1 < 5 || n1*(1-p1) < 5) {
+      print("Your sample does not follow the rules of thumb (n∗p>5 and n∗(1−p)>5")
+    } ## If the thumb rules are violated this message warns you
+    ###ZOE: Did you write your own warning.  I only saw it as a simple warning, but I think this would be really helpful for it to tell me specifically.  You just write what you want it to say in quotations?
+    
+    
+    ## Now I define p for each type of test
+    
+    if (alternative == "less") {
+      p <- pnorm(z, lower.tail = TRUE)
+      
+    }
+    
+    if (alternative == "greater") {
+      p <- pnorm(z, lower.tail = FALSE)
+      
+    }
+    
+    if (alternative == "two.sided") {
+      
+      if (z > 0) {
+        p <- 2 * pnorm(z, lower.tail = FALSE)
+      }  
+      
+      if (z < 0)
+                {
+        p <- 2 * pnorm(z, lower.tail = TRUE)
+                } 
+      
+    }
+  }
+ 
+  ## For 2 samples
+  if (is.null(p2) == FALSE && is.null(n2) == FALSE) {
+    ###ZOE: Why 2 &?
+    
+    pooledp <- (p1*n1+p2*n2)/(n1+n2)
+    z <- ((p2 - p1) - p0)/sqrt((pooledp * (1 - pooledp)) * (1/n1 + 1/n2)) ## Defines Z
+    lower <- (p2-p1) - qnorm(1-(1-conf.level)/2) * sqrt((p1 * (1 - p1)/n1)+(p2 * (1 - p2)/n2))
+    upper <- (p2-p1) + qnorm(1-(1-conf.level)/2) * sqrt((p1 * (1 - p1)/n1)+(p2 * (1 - p2)/n2))
+    ci <- c(lower, upper) ## Defines the CI
+    ## How to do a difference between two proportions confidence interval taken from https://www.dummies.com/education/math/statistics/how-to-estimate-the-difference-between-two-proportions/
+    
+    ###ZOE: Thank you for including this link.  It was helpful!
+    
+    if(n1*p1 < 5 || n1*(1-p1) < 5 || n2*p2 < 5 || n2*(1-p2) < 5) {
+      print("Your sample does not follow the rules of thumb (n∗p>5 and n∗(1−p)>5")
+    }
+    
+    
+    ## Now I define p for each type of test
+    
+    if (alternative == "less") {
+      p <- pnorm(z, lower.tail = TRUE)
+      
+    }
+    
+    if (alternative == "greater") {
+      p <- pnorm(z, lower.tail = FALSE)
+      
+    }
+    
+    if (alternative == "two.sided") {
+      
+      if (z > 0) {
+        p <- 2 * pnorm(z, lower.tail = FALSE)
+      }  
+      
+      if (z < 0)
+                {
+        p <- 2 * pnorm(z, lower.tail = TRUE)
+                } 
+      
+    }
+  }
+    
+  return(list(z,p,ci)) ## The function retuns a list with the Z value, the p value and the CI
+}
+###ZOE: This is great!  You are a great coder.  I am going to borrow a lot of this to make my code better. 
+```
+
+```{r}
+## here I run tests to see if all the features of the function work
+
+    z.prop.test(p1 = 0.6, n1 = 30, p0 = 0.5, conf.level = 0.95) 
+    z.prop.test(p1 = 0.6, n1 = 5, p0 = 0.5, alternative = "less", conf.level = 0.95)
+    z.prop.test(p1 = 0.6, n1 = 30, p0 = 0, p2 = 0.8, n2 = 25, conf.level = 0.95)
+    z.prop.test(p1 = 0.6, n1 = 30, p0 = 0.4, n2 = 25, conf.level = 0.95)
+    z.prop.test(p1 = 0.6, n1 = 50, p0 = 0, p2 = 0.8, n2 = 60, alternative = "greater", conf.level = 0.95)
+    
+## It seems to work in every circumstance
+    ###ZOE: I am wondering if you need to make n2=null.  But since this works very well, I guess you can just ignore?
+```
+
+## 2: Fit a simple linear regression model to predict longevity (MaxLongevity_m) measured in months from species’ brain size (Brain_Size_Species_Mean) measured in grams.
+
+```{r}
+
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/KamilarAndCooperData.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+names(d)
+## This loads the data
+
+```
+
+```{r}
+
+library(ggplot2)
+
+m <- lm(Brain_Size_Species_Mean ~ MaxLongevity_m, data = d)
+m
+## With this I obtain the intercept and slope of the regrssion line
+
+## This plots longevity against brain size
+longevity_brainsize <- ggplot(d, aes(MaxLongevity_m, Brain_Size_Species_Mean)) + geom_point(color = "darkgreen") + xlab("Longevity") + ylab("Brain size") + geom_smooth(method = lm) + annotate("text", x = 300, y = 400, label = "Brain Size = 0.40458*Longevity - 65.36266") ##https://ggplot2.tidyverse.org/reference/annotate.html#arguments
+
+longevity_brainsize
+
+
+
+
+l <- log(d$MaxLongevity_m) 
+b <- log(d$Brain_Size_Species_Mean)
+
+f <- cbind(d, l, b)
+head(f)
+names(f)
+
+n <- lm(b ~ l, data = f)
+n
+
+## This plots log(longevity) against log(brain size)
+###ZOE: I like how you defined these. This was much clearer than how I did it. 
+log_longevity_brainsize <- ggplot(f, aes(l, b)) + geom_point(color = "darkgreen") + xlab("log(Longevity)") + ylab("log(Brain size)") + geom_smooth(method = lm) + annotate("text", x = 5.5, y = 6, label = "log(Brain Size) = 2.4703*log(Longevity) - 10.5019") ##https://ggplot2.tidyverse.org/reference/annotate.html#arguments
+
+log_longevity_brainsize
+
+
+
+```
+
+```{r}
+
+summary(m)
+## The point estimate of the slope is 0.4045757
+
+t <- coef(summary(m))
+t <- data.frame(unlist(t))
+colnames(t) <- c("Est", "SE", "t", "p")
+t
+## The p-values (last column of the t data frame) are really small - there is significant evidence that the slope isn't = 0 (we reject the null hypothesis)
+###ZOE: Good column names.  Maybe define them in a comment later so you remember what they stand for?
+
+ci_m <- confint(m, level = 0.9)  # This calculates the CIs for the slope (β1) parameter and the intercept
+ci_m
+
+summary(n)
+## The point estimate of the slope is 2.470254
+
+u <- coef(summary(n))
+u <- data.frame(unlist(u))
+colnames(u) <- c("Est", "SE", "t", "p")
+u
+## The p-values (last colum of the t data frame) are really small - there is significant evidence that the slope isn't = 0 (we reject the null hypothesis)
+
+ci_n <- confint(n, level = 0.9)  # This calculates the CIs for the slope (β1) parameter and the intercept.
+ci_n
+
+```
+
+```{r}
+
+pi_m <- predict(m, newdata = data.frame(MaxLongevity_m = d$MaxLongevity_m), interval = "prediction",
+    level = 0.9) 
+
+g <- cbind(f,pi_m)
+
+
+longevity_brainsize2 <- ggplot(g, aes(MaxLongevity_m, Brain_Size_Species_Mean)) + geom_point(color = "darkgreen") + xlab("Longevity") + ylab("Brain size") + geom_smooth(method = lm, level = 0.9, colour = "blue", show.legend = TRUE) + geom_line(data = g, aes(x = MaxLongevity_m, y = lwr), colour = "red") + geom_line(data = g, aes(x = MaxLongevity_m, y = upr), colour = "red")  
+
+longevity_brainsize2
+
+
+pi_n <- predict(n, newdata = data.frame(l = d$l), interval = "prediction", level = 0.9) 
+
+h <- cbind(f,pi_n)
+
+log_longevity_brainsize2 <- ggplot(h, aes(l, b)) + geom_point(color = "darkgreen") + xlab("log(Longevity)") + ylab("log(Brain size)") + geom_smooth(method = lm, level = 0.9, colour = "blue", show.legend = TRUE) + geom_line(data = h, aes(x = l, y = lwr), colour = "red") + geom_line(data = h, aes(x = l, y = upr), colour = "red")
+
+log_longevity_brainsize2
+
+## This creates plots with both the 90%  CIs. I don't know how to show the legend, help!
+###ZOE: Is this helpful???? https://r-coder.com/add-legend-r/ 
+```
+```{r}
+
+#pi1 <- predict(m, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "prediction", level = 0.9)  
+#pi1
+## Doesn't work because I established longevity as the predictor variable, so I can't use this linear model to predict it. I can predict Brain Size from longevity
+###ZOE:Did you make this a comment so you remembered not to do it for the future?
+
+## I am going to reverse the relationship in order to calculate the longevity
+
+m2 <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d)
+
+pi2 <- predict(m2, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "prediction",
+    level = 0.9)  
+pi2
+
+## I don't trust too much this model to predict observations accurately for this value of the predictor variable because we don't have points in that range of values so you are not interpolating, you are extrapolating. Besides, the R-squared isn't to high and the PIs show that the value can fall in a range of 200 units.
+
+## I think the logarithm model is better because the R-squared is higher and the PIs are tighter
+
+```
+
+## CHALLENGES
+
+The logic for separating the 1 sample and 2 sample tests in the function was tricky. After an error R suggested me to use is.null and that worked :)
+I also had to search how to do a difference between two proportions confidence interval
+I had to spend some time figuring out how return worked
+The second part of the homework was harder for me. I couldn't predict Longevity because I used it as the predictor variable. The most difficult part was creating the PI lines in the plot. I kept getting errors because I was messing up with which variables I was calling and I switched the axes, but I ended up figuring it out. I also had trouble using geom_text. I ended up finding the function annotate which worked.
+
+
+
+
+
+
+
+
+
+
