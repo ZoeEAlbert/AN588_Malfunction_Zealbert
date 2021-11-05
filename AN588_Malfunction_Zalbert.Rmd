@@ -94,9 +94,12 @@ f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/m
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
 names(d)
+summary (d)
 ###Is this right as a means of loading?  I think I feel pretty confident about this one. 
 ```
 ###For this exercise, the end aim is to fit a simple linear regression model to predict longevity (MaxLongevity_m) measured in months from species’ brain size (Brain_Size_Species_Mean) measured in grams. Do the following for both longevity~brain size and log(longevity)~log(brain size):
+
+###HOW TO ADD A REGRESSION LINE: https://stackoverflow.com/questions/7549694/add-regression-line-equation-and-r2-on-graph 
 
 ```{r}
 plot(data = d, MaxLongevity_m ~ Brain_Size_Species_Mean)
@@ -124,6 +127,7 @@ library(ggplot2)
 g <- ggplot(data = d, aes(x = d$logBrain_Size_Species_Mean, y = d$logMaxLongevity_m)) + geom_point()
 g
 ###Kind of positive correlation. 
+###Should I have done curl?
 ```
 
 ```{r}
@@ -189,7 +193,8 @@ g <- g + geom_line(aes(x = x, y = CIfit), colour = "red")
 g <- g + geom_line(aes(x = x, y = CIlower), colour = "blue")
 g <- g + geom_line(aes(x = x, y = CIupper), colour = "green")
 g
-###Okay, I can kind of see the trend.  I get what I did so that's neat. 
+###Okay, I can kind of see the trend.  I get what I did so that's neat.
+###If I just try to run this code on its own it does not work.  I have to run this AFTER the chunks before this. 
 ```
 #####WarrenKevins Code:
 model1 <- lm(KC$MaxLongevity_m ~ KC$Brain_Size_Species_Mean)
@@ -219,6 +224,7 @@ df <- cbind(df, pi)
 names(df) <- c("x", "y", "yhat", "CIfit", "CIlower", "CIupper", "PIfit", "PIlower","PIupper")
 ###Those bad boys need a name. 
 ###I wish there was a way to make the uppercase I look like less of an lowercase l in the table. 
+### Can I name them more formally with the whole worf like this or do I need to do lwr, upr etc?
 head(df)
 ```
 
@@ -227,6 +233,7 @@ head(df)
 g <- g + geom_line(data = df, aes(x = x, y = PIlower), colour = "red")
 g1 <- g + geom_line(data = df, aes(x = x, y = PIupper), colour = "darkgreen")
 g
+###HOW DO I ADD A LEGEND?????????
 ###I changed the name and now its kinda screwed up and I am not sure why...It also doesn't give me an error until I call the specific function, which feels problematic I won't lie...I fixed it because I am a genius.  Moral of the story, don't change names halfway thorough. 
 ```
 ###Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. 
