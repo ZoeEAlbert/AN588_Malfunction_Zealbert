@@ -129,6 +129,8 @@ g
 ###Kind of positive correlation. 
 ```
 
+*Don't forget to add a line with geom_smooth(). also plot your not-logged data for comparison (also with ggplot). You can add the equation using annotated("text", label = "your equation") with the equation being based off of the interpretted coefficients given in your modle summary.*
+
 ```{r}
 b <- d$logBrain_Size_Species_Mean
 l <- d$logMaxLongevity_m
@@ -137,6 +139,8 @@ m
 ###Coefficients:Intercept = 4.8790 and b = 0.2341
 
 ```
+
+*Intercept is the y intercept, b is the slope, B0 and B1 respectively.*
 
 ```{r}
 
@@ -168,6 +172,8 @@ names(df) <- c("x", "y", "yhat")
 head(df)
 ```
 
+*missing the interval in your predict function*
+
 ```{r} 
 ci <- predict(m, newdata = data.frame(logBrain_Size_Species_Mean = d$logBrain_Size_Species_Mean), interval = "confidence", 
     level = 0.90)  # for a vector of values
@@ -194,6 +200,9 @@ g <- g + geom_line(aes(x = x, y = CIupper), colour = "green")
 g
 ###Okay, I can kind of see the trend.  I get what I did so that's neat. 
 ```
+
+*You want the original best fit line from your original plot, and PI and CI [one color for CI one for PI]*
+
 #####WarrenKevins Code:
 model1 <- lm(KC$MaxLongevity_m ~ KC$Brain_Size_Species_Mean)
 summary(model1)
@@ -254,3 +263,5 @@ Looking at your two models, which do you think is better? Why?  Thanks to help f
 
 ###Someone had told me on an earlier assignment that I could put descritions in the {r} on the top of my code, but when I do that it doesnt run anymore...
 ###I feel like I am relying really heavily on other peoples codes and help material that I find online. 
+
+*I know this assignment was a doozy. As far as the regression part goes, try to think about when you want to log transform the data (has to do with the distribution) and the interpretation of your beta values (think about your basic y=mx+b equation). Practicing ggplot will help you because then you can constantly check what your regression looks like. As far as ggplot goes, looking on the internet and other people's code is honestly a great way to learn!*
