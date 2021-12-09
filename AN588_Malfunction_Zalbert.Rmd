@@ -25,7 +25,8 @@ The function should return a list containing the members Z (the test statistic),
 
 ```
 ```{r}
-z.prop.test <-function(p1,n1,p0,p2=NULL,n2=NULL,conf.level=0.95,alternative="two.sided") {if(p1 == 0){return(0)}else {if((n1 * p1 < 5) | (n1 * (1-p1) > 5)){return(c("Warning: Not Normal", (p1-p0) / sqrt((p0 * (1-p0))/n1)))} else(return((p1-p0) / sqrt((p0 * (1-p0))/n1)))}}
+z.prop.test <-function(p1,n1,p0,p2=NULL,n2=NULL,conf.level=0.95,alternative="two.sided") 
+  {if(p1 == 0){return(0)}else {if((n1 * p1 < 5) | (n1 * (1-p1) > 5)){return(c("Warning: Not Normal", (p1-p0) / sqrt((p0 * (1-p0))/n1)))} else(return((p1-p0) / sqrt((p0 * (1-p0))/n1)))}}
 ###I don't fully understand why and how you know to do different lines.  It seems like this doesn't matter. Spacing doesn't matter. 
 ###Only works with two ==
 ###Just plugging in what the instructions said.  Unsure if all right, especially second half.  This should be for one sample, following these rules of thumb. 
@@ -56,6 +57,8 @@ if(p2 == 0){return(0)}else {if((n2 * p2 < 5) | (n2 * (1-p2) < 5)){return(c("Warn
 #########correct: a logical indicating whether Yates’ continuity correction should be applied where possible
 #########Note that, by default, the function prop.test() used the Yates continuity correction, which is really important if either the expected successes or failures is < 5. If you don’t want the correction, use the additional argument correct = FALSE in prop.test() function. The default value is TRUE. (This option must be set to FALSE to make the test mathematically equivalent to the uncorrected z-test of a proportion.)
 ```
+
+*you should be able to make one function defining all variables, for the one and two sample test (for one sample, you will set: if (is.null(p2) == TRUE || is.null(n2) == TRUE)) and your "else" will be when they are not null (i.e. you have p2 and n2 values) then define the upper and lower CI for when p2 and n2 are and are not null.*
 
 ```{r}
 ###one sample: sample proportion is 10%, size is 100, expected population proportion is 25%. Is this anything???
@@ -130,6 +133,8 @@ g
 ###Should I have done curl?
 ```
 
+*Don't forget to add a line with geom_smooth(). also plot your not-logged data for comparison (also with ggplot). You can add the equation using annotated("text", label = "your equation") with the equation being based off of the interpretted coefficients given in your modle summary.*
+
 ```{r}
 b <- d$logBrain_Size_Species_Mean
 l <- d$logMaxLongevity_m
@@ -138,6 +143,8 @@ m
 ###Coefficients:Intercept = 4.8790 and b = 0.2341
 
 ```
+
+*Intercept is the y intercept, b is the slope, B0 and B1 respectively.*
 
 ```{r}
 
@@ -169,6 +176,8 @@ names(df) <- c("x", "y", "yhat")
 head(df)
 ```
 
+*missing the interval in your predict function*
+
 ```{r} 
 ci <- predict(m, newdata = data.frame(logBrain_Size_Species_Mean = d$logBrain_Size_Species_Mean), interval = "confidence", 
     level = 0.90)  # for a vector of values
@@ -196,6 +205,9 @@ g
 ###Okay, I can kind of see the trend.  I get what I did so that's neat.
 ###If I just try to run this code on its own it does not work.  I have to run this AFTER the chunks before this. 
 ```
+
+*You want the original best fit line from your original plot, and PI and CI [one color for CI one for PI]*
+
 #####WarrenKevins Code:
 model1 <- lm(KC$MaxLongevity_m ~ KC$Brain_Size_Species_Mean)
 summary(model1)
@@ -258,3 +270,5 @@ Looking at your two models, which do you think is better? Why?  Thanks to help f
 
 ###Someone had told me on an earlier assignment that I could put descritions in the {r} on the top of my code, but when I do that it doesnt run anymore...
 ###I feel like I am relying really heavily on other peoples codes and help material that I find online. 
+
+*I know this assignment was a doozy. As far as the regression part goes, try to think about when you want to log transform the data (has to do with the distribution) and the interpretation of your beta values (think about your basic y=mx+b equation). Practicing ggplot will help you because then you can constantly check what your regression looks like. As far as ggplot goes, looking on the internet and other people's code is honestly a great way to learn!*
